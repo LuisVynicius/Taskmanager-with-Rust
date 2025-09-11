@@ -1,5 +1,5 @@
-mod tasks;
-use tasks::setup::run;
+mod taskmanager;
+use taskmanager::setup::run;
 
 fn main() {
     run();
