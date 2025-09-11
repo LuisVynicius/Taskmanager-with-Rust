@@ -1,5 +1,7 @@
+use super::task_status::TaskStatus;
+
 pub struct Task {
     title: String,
-    description: Stirng,
+    description: String,
     status: TaskStatus
 }
