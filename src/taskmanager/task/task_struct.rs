@@ -30,6 +30,10 @@ impl Task {
         TaskStatus::status_to_number(&self.status)
     }
 
+    pub fn set_status(&mut self, status: u8) {
+        self.status = TaskStatus::number_to_status(status);
+    }
+
     pub fn get_code(&self) -> u16 {
         self.code
     }

@@ -1,4 +1,4 @@
-use super::database::Database;
+use crate::taskmanager::{database::Database, utils::read_number};
 
 pub struct TaskManager {
     database: Database,
@@ -26,36 +26,51 @@ impl TaskManager {
             3 => {
                 println!("Remover tarefa\n1ºPor nome\n2ºPor posição\n3ºPor código");
 
-                let mut option = String::new();
+                let option = read_number();
 
-                std::io::stdin().read_line(&mut option).unwrap();
-
-                let option = option.trim().parse::<u8>().unwrap();
+                let option = match option {
+                    Some(number) => number,
+                    None => {
+                        println!("A opção deve ser um número");
+                        return;
+                    }
+                };
 
                 match option {
                     1 => self.database.delete_by_name(),
                     2 => self.database.delete_by_position(),
                     3 => self.database.delete_by_code(),
-                    _ => panic!("The option must be a number between 1 and 3.")
+                    _ => println!("A opção deve ser um número de 1 à 3.")
                 }
             }
             4 => {
                 println!("Encontrar tarefa\n1ºPor nome\n2ºPor posição\n3ºPor código");
 
-                let mut option = String::new();
+                let option = read_number();
 
-                std::io::stdin().read_line(&mut option).unwrap();
-
-                let option = option.trim().parse::<u8>().unwrap();
+                let option = match option {
+                    Some(number) => number,
+                    None => {
+                        println!("A opção deve ser um número");
+                        return;
+                    }
+                };
 
                 match option {
                     1 => self.database.find_by_name(),
                     2 => self.database.find_by_position(),
                     3 => self.database.find_by_code(),
-                    _ => panic!("The option must be a number between 1 and 3.")
+                    _ => println!("A opção deve ser um número de 1 à 4.")
                 }
             }
-            _ => {}
+            5 => {
+                println!("Encontrar tarefa por código");
+
+                self.database.change_status();
+            },
+            _ => {
+                println!("A ação deve ser um número de 1 à 5.")
+            }
         }
 
         println!("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");

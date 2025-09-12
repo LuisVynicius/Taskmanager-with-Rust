@@ -1,9 +1,7 @@
 use {
-    crate::taskmanager::task::{task_status::TaskStatus, task_struct::Task},
+    crate::taskmanager::{task::{task_status::TaskStatus, task_struct::Task}, utils::read_number},
     std::{
-        fs::{File, OpenOptions},
-        io::{BufRead, BufReader, Write},
-        path::Path,
+        any::{Any, TypeId}, fs::{File, OpenOptions}, io::{BufRead, BufReader, Error, Write}, num::ParseIntError, path::Path
     },
 };
 
@@ -171,21 +169,75 @@ impl Database {
     }
 
     pub fn find_by_code(&self) {
-        let mut code = String::new();
-
+        
         print!("Código da tarefa: ");
-        std::io::stdout().flush().unwrap();
+        let code = read_number();
 
-        std::io::stdin().read_line(&mut code).unwrap();
+        let code = match code {
+            Some(number) => number as u16,
+            None => {
+                println!("Uma tarefa com esse código não foi encontrada");
+                return;
+            }
+        };
 
-        let code = code.parse::<u16>().unwrap();
-
-        let task = self.database.get(self.database.iter().position(|t| t.get_code() == code).unwrap());
+        let task = self.database.get(self.position_by_code(code));
 
         match task {
             Some(t) => println!("{t:?}"),
             None => println!("Não foi encontrado uma tarefa com esse Código"),
         }
+    }
+
+    pub fn change_status(&mut self) {
+        print!("Código da tarefa: ");
+        
+        let code = read_number();
+
+        let code = match code {
+            Some(number) => number as u16,
+            None => {
+                println!("O código deve ser um número");
+                return;
+            }
+        };
+        
+        if !self.exists_by_code(code) {
+            println!("Nenhuma tarefa com esse código foi encontrada");
+            return;
+        }
+
+        let position = self.position_by_code(code);
+
+        let mut task = &mut self.database[position];
+
+        println!("{task:?}");
+
+        print!("Digite seu novo status: ");
+
+        std::io::stdout().flush().unwrap();
+
+        let mut status = read_number();
+
+        let status = match status {
+            Some(number) if number <= 0 || number > 4 => {
+                println!("O status deve ser um número entre 1-4.");
+                return;
+            },
+            Some(number) => number,
+            None => {
+                println!("O status deve ser um número entre 1-4.");
+                return;
+            }
+        };
+
+        task.set_status(status);
+        
+
+    }
+
+    fn position_by_code(&self, code: u16) -> usize {
+        self.database.iter().position(|t| t.get_code() == code).unwrap()
     }
 
     fn exists_by_title(&self, title: &str) -> bool {

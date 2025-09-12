@@ -1,4 +1,4 @@
-use super::{database::Database, task_manager::TaskManager};
+use crate::taskmanager::{database::Database, task_manager::TaskManager, utils::read_number};
 
 pub fn run() {
     let input = std::io::stdin();
@@ -10,15 +10,19 @@ pub fn run() {
     let mut task_manager = TaskManager::new();
 
     loop {
-        let mut command = String::new();
-
         println!(
-            "Qual ação deseja realizar?\n1ºListar tarefas\n2ºCriar tarefa\n3ºRemover tarefa\n4ºEncontrar tarefa (Nome)\n"
+            "Qual ação deseja realizar?\n1ºListar tarefas\n2ºCriar tarefa\n3ºRemover tarefa\n4ºEncontrar tarefa (Nome)\n5ºMudar status de uma tarefa"
         );
 
-        input.read_line(&mut command).unwrap();
+        let command = read_number();
 
-        let command = command.trim().parse::<u8>().unwrap();
+        let command = match command {
+            Some(number) => number,
+            None => {
+                println!("A ação deve ser um número\n");
+                continue;
+            }
+        };
 
         if command == 0 {
             task_manager.close();
