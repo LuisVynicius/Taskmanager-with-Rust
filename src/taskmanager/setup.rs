@@ -1,8 +1,6 @@
 use crate::taskmanager::{database::Database, task_manager::TaskManager, utils::read_number};
 
 pub fn run() {
-    let input = std::io::stdin();
-
     println!("=-=-=seja bem vindo ao gerenciador de tarefas=-=-=\n");
 
     init();
