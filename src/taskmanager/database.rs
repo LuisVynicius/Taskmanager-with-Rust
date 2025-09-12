@@ -209,15 +209,17 @@ impl Database {
 
         let position = self.position_by_code(code);
 
-        let mut task = &mut self.database[position];
+        let task = &mut self.database[position];
 
         println!("{task:?}");
+
+        println!("\n1ºPENDENTE\n2ºINICIADA\n3ºCANCELADA\n4ºENCERRADA\n");
 
         print!("Digite seu novo status: ");
 
         std::io::stdout().flush().unwrap();
 
-        let mut status = read_number();
+        let status = read_number();
 
         let status = match status {
             Some(number) if number <= 0 || number > 4 => {
