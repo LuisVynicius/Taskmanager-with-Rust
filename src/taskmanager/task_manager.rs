@@ -18,13 +18,13 @@ impl TaskManager {
             1 => {
                 println!("Mostrando tarefas\n");
                 self.database.show_tasks();
-            }
+            },
             2 => {
                 println!("Criando tarefa\n");
                 self.database.create_task();
-            }
+            },
             3 => {
-                println!("Remover tarefa\n1ºPor nome\n2ºPor posição\n3ºPor código");
+                println!("Remover tarefa\n1ºPor nome\n2ºPor posição\n3ºPor código\n4ºVoltar");
 
                 let option = read_number();
 
@@ -40,11 +40,12 @@ impl TaskManager {
                     1 => self.database.delete_by_name(),
                     2 => self.database.delete_by_position(),
                     3 => self.database.delete_by_code(),
+                    4 => {},
                     _ => println!("A opção deve ser um número de 1 à 3.")
                 }
-            }
+            },
             4 => {
-                println!("Encontrar tarefa\n1ºPor nome\n2ºPor posição\n3ºPor código");
+                println!("Encontrar tarefa\n1ºPor nome\n2ºPor posição\n3ºPor código\n4ºVoltar");
 
                 let option = read_number();
 
@@ -60,9 +61,10 @@ impl TaskManager {
                     1 => self.database.find_by_name(),
                     2 => self.database.find_by_position(),
                     3 => self.database.find_by_code(),
+                    4 => {},
                     _ => println!("A opção deve ser um número de 1 à 4.")
                 }
-            }
+            },
             5 => {
                 println!("Encontrar tarefa por código");
 

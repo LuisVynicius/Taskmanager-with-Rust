@@ -35,7 +35,7 @@ impl Database {
 
         let mut title = String::new();
         let mut description = String::new();
-        let mut status = String::new();
+        let mut status_string = String::new();
 
         print!("Titulo: ");
         std::io::stdout().flush().unwrap();
@@ -47,9 +47,17 @@ impl Database {
 
         print!("Status: ");
         std::io::stdout().flush().unwrap();
-        input.read_line(&mut status).unwrap();
+        input.read_line(&mut status_string).unwrap();
 
-        let status = status.trim().parse::<u8>().unwrap();
+        let status = 1;
+        
+        match status_string.trim().parse::<u8>() {
+            Ok(number) => number,
+            Err(_) => {
+                println!("O status deve ser um número de 1 à 4, status definido para 1(PENDENTE)");
+                1
+            }
+        };
 
         let task = Task::new(
             title.trim().to_string(),
@@ -83,21 +91,29 @@ impl Database {
     }
 
     pub fn delete_by_position(&mut self) {
-        let mut position = String::new();
+        let position = read_number();
 
-        std::io::stdin().read_line(&mut position).unwrap();
-
-        let position = position.trim().parse::<u16>().unwrap();
+        let position= match position {
+            Some(number) => number,
+            None => {
+                println!("A posição deve ser um número");
+                return;
+            }
+        };
 
         self.database.remove(position as usize);
     }
 
     pub fn delete_by_code(&mut self) {
-        let mut code = String::new();
+        let code = read_number();
 
-        std::io::stdin().read_line(&mut code).unwrap();
-
-        let code = code.trim().parse::<u16>().unwrap();
+        let code = match code {
+            Some(number) => number as u16,
+            None => {
+                println!("O código deve ser um número");
+                return;
+            }
+        };
 
         if self.exists_by_code(code) {
             self.database.remove(
@@ -151,14 +167,16 @@ impl Database {
     }
 
     pub fn find_by_position(&self) {
-        let mut position = String::new();
+        let position = read_number();
 
-        print!("Posição da tarefa: ");
-        std::io::stdout().flush().unwrap();
+        let position = match position {
+            Some(number) => number,
+            None => {
+                println!("A posição deve ser um número");
+                return;
+            }
 
-        std::io::stdin().read_line(&mut position).unwrap();
-
-        let position = position.parse::<usize>().unwrap();
+        } as usize;
 
         let task = self.database.get(position - 1);
 
@@ -176,14 +194,12 @@ impl Database {
         let code = match code {
             Some(number) => number as u16,
             None => {
-                println!("Uma tarefa com esse código não foi encontrada");
+                println!("O código deve ser um número");
                 return;
             }
         };
 
-        let task = self.database.get(self.position_by_code(code));
-
-        match task {
+        match self.database.get(self.position_by_code(code)) {
             Some(t) => println!("{t:?}"),
             None => println!("Não foi encontrado uma tarefa com esse Código"),
         }
