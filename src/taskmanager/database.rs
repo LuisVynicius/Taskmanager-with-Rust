@@ -9,12 +9,14 @@ use {
 
 pub struct Database {
     database: Vec<Task>,
+    code: u16,
 }
 
 impl Database {
     pub fn new() -> Self {
         Self {
             database: Self::get_vec_from_database(),
+            code: Self::get_code_from_database(),
         }
     }
 
@@ -55,17 +57,66 @@ impl Database {
             title.trim().to_string(),
             description.trim().to_string(),
             TaskStatus::number_to_status(status),
-            self.get_code() + 1,
+            self.code,
         );
 
         self.database.push(task);
+        self.code += 1;
+    }
+
+    pub fn delete_by_name(&mut self) {
+        let mut name = String::new();
+
+        print!("Nome da tarefa: ");
+        std::io::stdout().flush().unwrap();
+
+        std::io::stdin().read_line(&mut name).unwrap();
+
+        let name = name.trim();
+
+        if self.exists_by_title(name) {
+            self.database.remove(
+                self.database
+                    .iter()
+                    .position(|task| task.get_title() == name)
+                    .unwrap(),
+            );
+        }
+    }
+
+    pub fn delete_by_position(&mut self) {
+        let mut position = String::new();
+
+        std::io::stdin().read_line(&mut position).unwrap();
+
+        let position = position.trim().parse::<u16>().unwrap();
+
+        self.database.remove(position as usize);
+    }
+
+    pub fn delete_by_code(&mut self) {
+        let mut code = String::new();
+
+        std::io::stdin().read_line(&mut code).unwrap();
+
+        let code = code.trim().parse::<u16>().unwrap();
+
+        if self.exists_by_code(code) {
+            self.database.remove(
+                self.database
+                    .iter()
+                    .position(|task| task.get_code() == code)
+                    .unwrap(),
+            );
+        } else {
+            println!("Tarefa não encontrada por código");
+        }
     }
 
     pub fn save(&mut self) {
         let mut file = Self::get_file(2);
 
-        file.write(format!("{}\n", self.database.len()).as_bytes())
-            .unwrap();
+        file.write(format!("{}\n", self.code).as_bytes()).unwrap();
 
         for task in &self.database {
             file.write(
@@ -77,8 +128,72 @@ impl Database {
                     task.get_code()
                 )
                 .as_bytes(),
-            ).unwrap();
+            )
+            .unwrap();
         }
+    }
+
+    pub fn find_by_name(&self) {
+        let mut name = String::new();
+
+        print!("Nome da tarefa: ");
+        std::io::stdout().flush().unwrap();
+
+        std::io::stdin().read_line(&mut name).unwrap();
+
+        let task = self
+            .database
+            .iter()
+            .find(|task| task.get_title() == name.trim());
+
+        match task {
+            Some(t) => println!("{t:?}"),
+            None => println!("Não foi encontrado uma tarefa com esse nome"),
+        }
+    }
+
+    pub fn find_by_position(&self) {
+        let mut position = String::new();
+
+        print!("Posição da tarefa: ");
+        std::io::stdout().flush().unwrap();
+
+        std::io::stdin().read_line(&mut position).unwrap();
+
+        let position = position.parse::<usize>().unwrap();
+
+        let task = self.database.get(position - 1);
+
+        match task {
+            Some(t) => println!("{t:?}"),
+            None => println!("Não foi encontrado uma tarefa com essa Posição"),
+        }
+    }
+
+    pub fn find_by_code(&self) {
+        let mut code = String::new();
+
+        print!("Código da tarefa: ");
+        std::io::stdout().flush().unwrap();
+
+        std::io::stdin().read_line(&mut code).unwrap();
+
+        let code = code.parse::<u16>().unwrap();
+
+        let task = self.database.get(self.database.iter().position(|t| t.get_code() == code).unwrap());
+
+        match task {
+            Some(t) => println!("{t:?}"),
+            None => println!("Não foi encontrado uma tarefa com esse Código"),
+        }
+    }
+
+    fn exists_by_title(&self, title: &str) -> bool {
+        self.database.iter().any(|task| task.get_title() == title)
+    }
+
+    fn exists_by_code(&self, code: u16) -> bool {
+        self.database.iter().any(|task| task.get_code() == code)
     }
 
     fn get_vec_from_database() -> Vec<Task> {
@@ -95,7 +210,9 @@ impl Database {
                 let task = Task::new(
                     line_split[0].to_string(),
                     line_split[1].to_string(),
-                    TaskStatus::number_to_status(line_split[2].trim().parse::<u8>().unwrap()),
+                    TaskStatus::number_to_status(
+                        line_split[2].trim().parse::<u8>().unwrap()
+                    ),
                     line_split[3].trim().parse::<u16>().unwrap(),
                 );
 
@@ -104,6 +221,15 @@ impl Database {
         }
 
         database
+    }
+
+    fn get_code_from_database() -> u16 {
+        let buf_reader = BufReader::new(Self::get_file(1));
+
+        match buf_reader.lines().nth(0) {
+            Some(x) => x.unwrap().parse::<u16>().unwrap(),
+            None => 1,
+        }
     }
 
     fn file_exists() -> bool {
@@ -115,10 +241,6 @@ impl Database {
             Ok(_) => {}
             Err(_) => panic!("Error to generate the file."),
         }
-    }
-
-    fn get_code(&self) -> u16 {
-        self.database.len() as u16
     }
 
     // 1 Read
@@ -133,8 +255,7 @@ impl Database {
                 .write(true)
                 .truncate(true)
                 .open(file_name),
-            3 => OpenOptions::new().append(true).write(true).open(file_name),
-            _ => panic!("The file_type must be a number between 1 and 3."),
+            _ => panic!("The file_type must be a number between 1 and 2."),
         };
 
         match file {

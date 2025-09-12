@@ -13,7 +13,7 @@ pub fn run() {
         let mut command = String::new();
 
         println!(
-            "Qual ação deseja realizar?\n1 - Listar tarefas\n2 - Criar tarefa\n3 - Remover tarefa\n4 - Encontrar tarefa (Nome)\n5 - Encontrar tarefa (Posição)\n6 - Encontrar tarefa (Código)"
+            "Qual ação deseja realizar?\n1ºListar tarefas\n2ºCriar tarefa\n3ºRemover tarefa\n4ºEncontrar tarefa (Nome)\n"
         );
 
         input.read_line(&mut command).unwrap();
@@ -24,8 +24,6 @@ pub fn run() {
             task_manager.close();
             break;
         }
-
-        println!();
 
         task_manager.action(command);
     }
