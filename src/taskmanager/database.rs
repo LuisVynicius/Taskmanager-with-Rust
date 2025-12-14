@@ -188,6 +188,8 @@ impl Database {
     pub fn find_by_code(&self) {
         
         print!("Código da tarefa: ");
+        std::io::stdout().flush().unwrap();
+        
         let code = read_number();
 
         let code = match code {
