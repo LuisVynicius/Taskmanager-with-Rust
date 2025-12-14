@@ -1,6 +1,7 @@
+use std::fmt::Display;
+
 use super::task_status::TaskStatus;
 
-#[derive(Debug)]
 pub struct Task {
     title: String,
     description: String,
@@ -36,5 +37,11 @@ impl Task {
 
     pub fn get_code(&self) -> u16 {
         self.code
+    }
+}
+
+impl Display for Task {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} | {} | {} | {:?}", self.code, self.title, self.description, self.status)
     }
 }

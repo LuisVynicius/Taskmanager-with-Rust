@@ -25,8 +25,9 @@ impl Database {
     }
 
     pub fn show_tasks(&self) {
+        println!("[Id] | [Título] | [Descrição] | [Status]");
         for task in &self.database {
-            println!("{task:?}");
+            println!("{task}");
         }
     }
 
@@ -49,9 +50,7 @@ impl Database {
         std::io::stdout().flush().unwrap();
         input.read_line(&mut status_string).unwrap();
 
-        let status = 1;
-        
-        match status_string.trim().parse::<u8>() {
+        let status = match status_string.trim().parse::<u8>() {
             Ok(number) => number,
             Err(_) => {
                 println!("O status deve ser um número de 1 à 4, status definido para 1(PENDENTE)");
@@ -135,7 +134,7 @@ impl Database {
         for task in &self.database {
             file.write(
                 format!(
-                    "{} {} {} {}\n",
+                    "{};{};{};{}\n",
                     task.get_title(),
                     task.get_description(),
                     task.get_status(),
@@ -161,7 +160,7 @@ impl Database {
             .find(|task| task.get_title() == name.trim());
 
         match task {
-            Some(t) => println!("{t:?}"),
+            Some(t) => println!("{t}"),
             None => println!("Não foi encontrado uma tarefa com esse nome"),
         }
     }
@@ -181,7 +180,7 @@ impl Database {
         let task = self.database.get(position - 1);
 
         match task {
-            Some(t) => println!("{t:?}"),
+            Some(t) => println!("{t}"),
             None => println!("Não foi encontrado uma tarefa com essa Posição"),
         }
     }
@@ -200,7 +199,7 @@ impl Database {
         };
 
         match self.database.get(self.position_by_code(code)) {
-            Some(t) => println!("{t:?}"),
+            Some(t) => println!("{t}"),
             None => println!("Não foi encontrado uma tarefa com esse Código"),
         }
     }
@@ -227,7 +226,7 @@ impl Database {
 
         let task = &mut self.database[position];
 
-        println!("{task:?}");
+        println!("{task}");
 
         println!("\n1ºPENDENTE\n2ºINICIADA\n3ºCANCELADA\n4ºENCERRADA\n");
 
@@ -275,7 +274,7 @@ impl Database {
 
         for i in buf_reader.lines().skip(1) {
             if let Ok(line) = i {
-                let line_split = line.split_whitespace().collect::<Vec<&str>>();
+                let line_split = line.split(';').collect::<Vec<&str>>();
 
                 let task = Task::new(
                     line_split[0].to_string(),

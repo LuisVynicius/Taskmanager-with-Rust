@@ -9,7 +9,7 @@ pub fn run() {
 
     loop {
         println!(
-            "Qual ação deseja realizar?\n1ºListar tarefas\n2ºCriar tarefa\n3ºRemover tarefa\n4ºEncontrar tarefa (Nome)\n5ºMudar status de uma tarefar"
+            "Qual ação deseja realizar?\n0º Sair\n1º Listar tarefas\n2º Criar tarefa\n3º Remover tarefa\n4º Encontrar tarefa (Nome)\n5º Mudar status de uma tarefar"
         );
 
         let command = read_number();
